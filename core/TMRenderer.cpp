@@ -18,12 +18,15 @@ TMRenderer::TMRenderer(){
 #endif
 
 #ifdef Q_OS_WIN
-    tmesh = new meshObject("D:/gitrepos/TMP/data/bunny.obj"); //demo FullBodyScan
+    tmesh = new meshObject("D:/gitrepos/TMP/data/bunny.obj"); //bunny FullBodyScan
 #endif
     this << std::pair< std::string,std::function<void(void)>>("indices", [=](void){
         TGL.glClearColor(0.2, 0.3, 0.3, 1.0);
         TGL.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        tmesh->draw("indices"); // indices picker
+        SM->draw("indices",TMESH,[=]{
+            SMP["indices"]->setUniformValue("base_color",QVector3D(0.2f,0.2f,0.2f));
+            TMESH->indicesDraw();
+        });
     });
     this->render_semaphore.release(1);
 }
@@ -42,21 +45,19 @@ TMRenderer::~TMRenderer() {
 }
 
 void TMRenderer::render() {
-    this->render_semaphore.acquire();
-    call_lock.lockForRead();
-    for(auto& e:this->anonymous_caller)
-        e();
-    anonymous_caller.clear();
-    for(auto& e:this->named_caller)
-        e.second();
+    if(this->render_semaphore.tryAcquire()){
+        call_lock.lockForRead();
+        for(auto& e:this->anonymous_caller)
+            e();
+        anonymous_caller.clear();
+        for(auto& e:this->named_caller)
+            e.second();
+        call_lock.unlock();
+    }
     this->update();
-    call_lock.unlock();
+
 }
 
 void TMRenderer::update(){
     QQuickFramebufferObject::Renderer::update();
-}
-
-void TMRenderer::rotate(int dx, int dy) {
-    tmesh->rotate(dx, dy);
 }

@@ -21,18 +21,21 @@ void SelectManager::createAttchment(unsigned int x, unsigned int y) {
     TGL.glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void SelectManager::pickFace(std::function<void ()> pick_f, std::vector<std::pair<int,int>> xys){
+std::vector<int>& SelectManager::pickFace(std::function<void ()> pick_f, std::vector<std::pair<int,int>> xys){
     TGL.glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->m_fbo);
     pick_f();
     TGL.glBindFramebuffer(GL_READ_FRAMEBUFFER, this->m_fbo);
     TGL.glReadBuffer(GL_COLOR_ATTACHMENT0);
-    std::vector<int> pick_res;
     float rgb[3];
+    pick_res.clear();
     for(auto& e: xys){
-        LOG(INFO) << e.first << ' ' << e.second;
+//        LOG(INFO) << e.first << ' ' << e.second;
         TGL.glReadPixels(e.first, e.second, 1, 1, GL_RGB, GL_FLOAT, rgb);
-        LOG(INFO) << rgb[0] << ' ' << rgb[1] << ' ' << rgb[2];
+//        LOG(INFO) << rgb[0] << ' ' << rgb[1] << ' ' << rgb[2];
+        if(rgb[0] != -1)
+            pick_res.push_back((int)rgb[0]);
     }
     TGL.glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     TGL.glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    return pick_res;
 }

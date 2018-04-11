@@ -14,7 +14,6 @@ class TMRenderer: public QQuickFramebufferObject::Renderer{
     QOpenGLFramebufferObject* createFramebufferObject(const QSize &size);
 public:
     void update();
-    void rotate(int dx, int dy);
     TMRenderer();
     static QOpenGLFunctions_4_5_Core& getGL(){
         return self->gl;

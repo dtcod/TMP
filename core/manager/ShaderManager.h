@@ -5,6 +5,7 @@
 #include <QOpenGLShaderProgram>
 #include <map>
 #include <string>
+#include <meshObject.h>
 class ShaderManager
 {
 public:
@@ -16,6 +17,7 @@ public:
     }
     std::map<std::string,QOpenGLShaderProgram*> program;
     void initialize();
+    void draw(std::string shader, meshObject* mesh, std::function<void(void)> ex_f=nullptr);
 private:
 
     ShaderManager();

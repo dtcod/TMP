@@ -7,6 +7,8 @@
 #include <functional>
 #include <array>
 #include <glm/glm.hpp>
+#include <functional>
+#include <QMatrix4x4>
 struct  VertItem{
     VertItem(){
         mn =  glm::vec3(0);
@@ -20,19 +22,20 @@ class meshObject
 {
 public:
     meshObject(std::string filename);
-    glm::mat4 model;
     void rotate(int dx, int dy);
-    void draw(std::string shader);
+    void scaleBy(float s);
+    QMatrix4x4 getModel();
+    void indicesDraw(int start=0, int count=-1);
 private:
     GLuint vao;
     GLuint vbo, ibo;
+    glm::mat4 model;
     std::vector<VertItem> _v;
     std::vector<std::array<int, 3>> _f;
     void centerlized();
     void read(std::string file);
     void write(std::string file);
     void calculateNorm();
-    void indicesDraw();
 };
 
 #endif // MESHOBJECT_H

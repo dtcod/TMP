@@ -100,25 +100,27 @@ void meshObject::calculateNorm(){
 }
 
 void meshObject::rotate(int dx, int dy) {
-    if (abs(dx) > abs(dy) && abs(dx) > 2) {
+    if (abs(dx) > abs(dy)) {
         model = glm::rotate(glm::mat4(), dx * 0.003f, glm::vec3(0, 1, 0)) * model;
-    } else if (abs(dy) > abs(dx) && abs(dy) > 2) {
+    } else if (abs(dy) > abs(dx) ) {
         model = glm::rotate(glm::mat4(),-dy * 0.003f, glm::vec3(1, 0, 0)) * model;
     }
 }
 
-void meshObject::indicesDraw() {
+QMatrix4x4 meshObject::getModel(){
+    return QMatrix4x4(glm::value_ptr(this->model), 4, 4);
+}
+
+void meshObject::scaleBy(float s) {
+    model = glm::scale(glm::mat4(), (1+s)*glm::vec3(1,1,1)) * model;
+}
+
+void meshObject::indicesDraw(int start, int count) {
+    if(count == -1) count = this->_f.size()*3;
     TGL.glBindVertexArray(this->vao);
 //    TGL.glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 //    TGL.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
-    TGL.glDrawElements(GL_TRIANGLES, this->_f.size()*3, GL_UNSIGNED_INT,0);
+    TGL.glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (GLvoid*)(start*sizeof(unsigned int)));
     TGL.glBindVertexArray(0);
 }
 
-void meshObject::draw(std::string shader) {
-    SMP[shader]->bind();
-    SMP[shader]->setUniformValue("camera_vp", QMatrix4x4(CM->vp_pointer(), 4, 4));
-    SMP[shader]->setUniformValue("model", QMatrix4x4(glm::value_ptr(this->model), 4, 4));
-    this->indicesDraw();
-    SMP[shader]->release();
-}

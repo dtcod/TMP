@@ -17,6 +17,7 @@ public slots:
     void move(int x, int y);
     void rotate(int x, int y);
     void doubleClick(int x,int y);
+    void scaleBy(float s);
 private:
 
 };

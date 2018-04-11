@@ -15,7 +15,6 @@ ApplicationWindow{
             id: tmMouse
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton | Qt.RightButton
-
         }
 
     }
@@ -36,6 +35,10 @@ ApplicationWindow{
                 tm.move(mouse.x-ppos.x, mouse.y - ppos.y)
             }
             ppos = Qt.point(mouse.x, mouse.y)
+        }
+
+        onWheel: {
+            tm.scaleBy(wheel.angleDelta.y*0.001)
         }
 
     }
