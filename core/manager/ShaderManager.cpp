@@ -9,10 +9,11 @@ ShaderManager::ShaderManager()
 
 void ShaderManager::initialize(){
     SMP["indices"]->addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/indices.v.glsl");
+    SMP["indices"]->addShaderFromSourceFile(QOpenGLShader::Geometry, ":/indices.g.glsl");
     SMP["indices"]->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/indices.f.glsl");
     SMP["indices"]->link();
 
-    SMP["picker"]->addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/indices.v.glsl");
+    SMP["picker"]->addShaderFromSourceFile(QOpenGLShader::Vertex,   ":/indices.picker.v.glsl");
     SMP["picker"]->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/indices.picker.f.glsl");
     SMP["picker"]->link();
 }

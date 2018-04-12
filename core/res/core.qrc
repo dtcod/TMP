@@ -4,5 +4,7 @@
         <file>indices.v.glsl</file>
         <file>indices.f.glsl</file>
         <file>indices.picker.f.glsl</file>
+        <file>indices.g.glsl</file>
+        <file>indices.picker.v.glsl</file>
     </qresource>
 </RCC>
