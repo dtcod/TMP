@@ -33,7 +33,10 @@ private:
     std::vector<VertItem> _v;
     std::vector<std::array<int, 3>> _f;
     void centerlized();
-    void read(std::string file);
+    bool readObj(std::string file);
+    bool readOff(std::string file);
+    void initGLVertexArrays();
+    void syncGLVertexArrays();
     void write(std::string file);
     void calculateNorm();
 };

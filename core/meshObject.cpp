@@ -7,16 +7,27 @@
 #include <utils/Select.h>
 #include <manager/ShaderManager.h>
 #include <manager/CameraManager.h>
+
 meshObject::meshObject(std::string filename)
 {
-    read(filename);
-    centerlized();
-    calculateNorm();
-    //        write(filename+".obj");
+    if(filename.substr(filename.length()-4,4).compare(".off") == 0)
+        this->readOff(filename);
+    else if(filename.substr(filename.length()-4,4).compare(".obj") == 0)
+        this->readObj(filename);
+    this->centerlized();
+    this->calculateNorm();
     LOG(INFO) <<"f: " <<_f.size() << " v: " << _v.size();
+    this->initGLVertexArrays();
+    this->syncGLVertexArrays();
+}
+
+void meshObject::initGLVertexArrays() {
     TGL.glGenVertexArrays(1, &vao);
     TGL.glGenBuffers(1, &vbo);
     TGL.glGenBuffers(1, &ibo);
+}
+
+void meshObject::syncGLVertexArrays(){
     TGL.glBindVertexArray(vao);
     TGL.glBindBuffer(GL_ARRAY_BUFFER, vbo);
     TGL.glBufferData(GL_ARRAY_BUFFER, _v.size()*sizeof(_v[0]), _v.data(), GL_STATIC_DRAW);
@@ -30,12 +41,12 @@ meshObject::meshObject(std::string filename)
     TGL.glBindVertexArray(0);
 }
 
-void meshObject::read(std::string filename){
+bool meshObject::readObj(std::string filename){
     std::fstream fileHandle;
     fileHandle.open(filename,std::ifstream::in);
     if(!fileHandle.is_open()) {
         LOG(INFO) << "failed to load obj: " << filename;
-        return;
+        return false;
     }
     char tmpLine[500];
     VertItem Av;
@@ -53,6 +64,39 @@ void meshObject::read(std::string filename){
         }
     }
     fileHandle.close();
+    return true;
+}
+#include <cstdio>
+bool meshObject::readOff(std::string filename) {
+    std::fstream fileHandle;
+    fileHandle.open(filename,std::ifstream::in);
+    if(!fileHandle.is_open()) {
+        LOG(INFO) << "failed to load off: " << filename;
+        return false;
+    }
+    int size[3];
+    char tmpLine[300];
+    fileHandle.getline(tmpLine,300);
+    if(strstr(tmpLine, "OFF") == NULL){
+        LOG(INFO) << "failed to load off: " << filename;
+        return false;
+    }
+    fileHandle.getline(tmpLine,300);
+    sscanf(tmpLine,"%d %d %d",size, size+1, size+2);
+    LOG(INFO) <<"off file: " << size[0] << ' ' << size[1] << ' ' << size[2];
+    _v.resize(size[0]);
+    _f.resize(size[1]);
+    for(int i=0; i< size[0]; i++) {
+        fileHandle.getline(tmpLine,300);
+        sscanf(tmpLine,"%f%f%f",&_v[i].mv[0],&_v[i].mv[1],&_v[i].mv[2]);
+    }
+
+    for(int i=0; i< size[1]; i++) {
+        fileHandle.getline(tmpLine,300);
+        sscanf(tmpLine,"3 %d %d %d",&_f[i][0],&_f[i][1],&_f[i][2]);
+    }
+    fileHandle.close();
+    return true;
 }
 
 void meshObject::write(std::string filename){

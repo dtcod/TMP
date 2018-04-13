@@ -14,7 +14,7 @@ TMRenderer::TMRenderer(){
     gl.glEnable(GL_DEPTH_TEST);
     SM->initialize();
 #ifdef Q_OS_LINUX
-    tmesh = new meshObject("/home/user/gitrepos/TMP/data/bunny.obj"); //demo
+    tmesh = new meshObject("/home/user/gitrepos/TMP/data/body.off"); //demo
 #endif
 
 #ifdef Q_OS_WIN
